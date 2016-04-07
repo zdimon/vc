@@ -1,0 +1,14 @@
+    {
+      "name": "chat",
+      "version": "0.0.1",
+      "dependencies": {
+        "angular": "*",
+        "jquery": "*",
+        "bootstrap": "*",
+        "angular-ui-router": "*",
+        "angular-websocket": "*",
+        "sockjs": "*",
+        "angular-sockjs": "*",
+        "ng-socket": "*"
+      }
+    }

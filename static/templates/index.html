@@ -1,0 +1,10 @@
+<h3> Superchat </h3>
+
+<div class="wel">
+    <ul>
+        <li ng-repeat="m in messages">{{ m.text }}</li>
+    </ul>
+    <p><textarea ng-model="textMessage" id="text_message"> </textarea></p>
+    <p><button type="button" class="btn btn-default dropdown-toggle" ng-click="sendMessage()"> Send message </button></p>
+</div>
+

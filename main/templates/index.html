@@ -1,0 +1,57 @@
+    <html>
+       <head>
+          <title>Chat</title>
+          <link rel="stylesheet" href="static/library/bootstrap/dist/css/bootstrap.min.css" >
+          <script type = "text/javascript" src = "static/library/angular/angular.min.js"></script>
+          <script src="/static/library/angular-ui-router/release/angular-ui-router.min.js"></script>
+          <script type = "text/javascript" src = "static/library/jquery/dist/jquery.min.js"></script>
+          <script type = "text/javascript" src = "static/library/sockjs/sockjs.js"></script>
+          <script type = "text/javascript" src = "static/library/ng-socket/ngSocket.js"></script>
+          
+         
+       </head>
+	
+       <body style="padding-top: 70px;" ng-app="ChatApp" id="ng-app">
+              <nav class="navbar navbar-inverse navbar-fixed-top">
+          <div class="container">
+
+            <div class="navbar-header">             
+              <a class="navbar-brand" href="#">Web chat</a>
+            </div>
+
+            <div id="navbar" class="collapse navbar-collapse">
+
+              <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+               
+              </ul>
+                 
+            </div>
+          </div>
+        </nav>
+        
+        
+        <div class="container">
+            <div class="row row-offcanvas row-offcanvas-right">
+        
+                <div class="col-xs-12 col-sm-9 jumbotron" id="content"> 
+                    <div ui-view >Loading...</div>
+                </div> 
+        
+        
+        
+                 <div class="col-xs-6 col-sm-3" id="menu">
+                              
+                 
+                    <div class="list-group" >
+                        <a id="link1" class="list-group-item active" href="#">Link</a>
+                        
+                    </div>
+                 
+                 </div> 
+            </div> 
+        </div> 
+        <script type = "text/javascript" src = "static/app.js"></script>
+       </body>
+	
+    </html>
