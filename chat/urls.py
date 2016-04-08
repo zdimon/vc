@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from main.views import index
+from main.views import index, send_message
 
 urlpatterns = [
-    url(r'^', index),
+    url(r'^$', index),
+    url(r'^send_message$', send_message),
     url(r'^admin/', admin.site.urls),
 ]

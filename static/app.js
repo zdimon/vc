@@ -1,9 +1,16 @@
+var app;
+
 (function () {
   'use strict';
 
-    angular.module('ChatApp', ['ui.router','ng-socket'])
+    var app = angular.module('ChatApp', ['ui.router','ng-socket'])
 
-    .config(function($stateProvider, $urlRouterProvider, $socketProvider) {
+    .config(function($stateProvider, $urlRouterProvider, $socketProvider, $httpProvider) {
+
+        $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+        $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+        $httpProvider.defaults.useXDomain = true;
+        delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
        $socketProvider.configure({ address: 'http://localhost:9999/echo' });             
 
@@ -18,38 +25,66 @@
       $urlRouterProvider.otherwise('/');
     })
 
-    .controller('MainCtrl', function($scope, $socket) {
+
+    .controller('MainCtrl', function($scope, $socket, $http, VideoStream, WebRTCRoom) {
+
+        //WebRTC
+
+        if (!window.RTCPeerConnection || !navigator.getUserMedia) {
+          alert('WebRTC is not supported by your browser. You can try the app with Chrome and Firefox.');
+          return;
+        }
+        var stream;
+        VideoStream.get()
+        .then(function (s) {
+            stream = s;
+            WebRTCRoom.init(stream);
+            stream = URL.createObjectURL(stream);
+            WebRTCRoom.joinRoom('test_room');
+        }, function () {
+          alert('No audio/video permissions. Please refresh your browser and allow the audio/video capturing.');
+       });
+
+
          $scope.messages = [];
-         $scope.participans = [];
+         $scope.participants = [];
 
          $scope.sendMessage = function(){
-            $.each($scope.participans, function( index, value ) {
-              $socket.send('send_message',JSON.stringify({text: $scope.textMessage, room_id: value}));
-            });
             
-            $scope.textMessage = null;
+                var url = 'http://localhost:8080/send_message'
+                var data = { 
+                             'participants': $scope.participants,
+                             'message':$scope.textMessage
+                           }
+
+                return $http.post(url, data).success(function(result){
+                    console.log(result);
+                    $scope.textMessage = null;
+                });
+            
          };
 
          $socket.on("send_message", function(event, data){
-            $scope.messages.push(JSON.parse(data));
+             console.log(data);
+            $scope.messages.push(data);
          });
 
          $socket.on("someone_joined", function(event, data){         
             var id = data['id']
-            if($.inArray(id, $scope.participans)<0) {
+            if($.inArray(id, $scope.participants)<0) {
             //$.inArray() returns the index of the item if it is found, and -1 otherwise
-              $scope.participans.push(id);
+              $scope.participants.push(id);
             }   
-            console.log($scope.participans);    
+            console.log($scope.participants);    
          });
 
          $socket.on("someone_left", function(event, data){         
             var id = data['id']
-            if($.inArray(id, $scope.participans)>0) {
+            if($.inArray(id, $scope.participants)>0) {
                // remove element
-               $scope.participans.splice($.inArray(id, $scope.participans),1);
+               $scope.participants.splice($.inArray(id, $scope.participants),1);
             }   
-            console.log($scope.participans);    
+            console.log($scope.participants);    
          });
 
 
@@ -59,12 +94,7 @@
 
     })
 
-    .run(function ($rootScope, $socket) {
 
-
-
-
-     })
 ;
 
 })();

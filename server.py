@@ -4,6 +4,10 @@ from tornado import gen
 import tornadoredis
 import json
 
+import redis
+r = redis.StrictRedis(host='localhost', port=6379, db=0)
+
+
 class ChatConnection(SockJSConnection):
     participants = set()
     def __init__(self,*args):
@@ -39,7 +43,11 @@ class ChatConnection(SockJSConnection):
             self.current_channel = data['room_id']
             # Send that someone joined
             self.broadcast(self.participants, json.dumps(['someone_joined',{'id': data['room_id']}]))
-        
+            # add all participants to current user's room
+            for p in self.participants:
+                r.publish(self.current_channel,json.dumps(['someone_joined', {'id': p.current_channel}]))     
+        if act == 'init_rtc_room':
+            print data
         if act == 'send_message':
             print data
         else:
