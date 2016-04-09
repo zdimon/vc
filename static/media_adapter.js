@@ -11,16 +11,25 @@
     angular.module('ChatApp')
       .factory('VideoStream', function ($q) {
         var stream;
+        var constraints = {
+        video: {
+                mandatory: {
+                minWidth: 480,
+                minHeight: 320,
+                maxWidth: 480,
+                maxHeight: 320
+                }
+            },
+            audio: true
+            };
+
         return {
           get: function () {
             if (stream) {
               return $q.when(stream);
             } else {
               var d = $q.defer();
-              navigator.getUserMedia({
-                video: true,
-                audio: true
-              }, function (s) {
+              navigator.getUserMedia(constraints, function (s) {
                 stream = s;
                 d.resolve(stream);
               }, function (e) {

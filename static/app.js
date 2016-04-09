@@ -29,21 +29,26 @@ var app;
     .controller('MainCtrl', function($scope, $socket, $http, VideoStream, WebRTCRoom) {
 
         //WebRTC
+        $scope.enableMyVideo = function() {
+            
 
-        if (!window.RTCPeerConnection || !navigator.getUserMedia) {
-          alert('WebRTC is not supported by your browser. You can try the app with Chrome and Firefox.');
-          return;
-        }
-        var stream;
-        VideoStream.get()
-        .then(function (s) {
-            stream = s;
-            WebRTCRoom.init(stream);
-            stream = URL.createObjectURL(stream);
-            WebRTCRoom.joinRoom('test_room');
-        }, function () {
-          alert('No audio/video permissions. Please refresh your browser and allow the audio/video capturing.');
-       });
+            if (!window.RTCPeerConnection || !navigator.getUserMedia) {
+              alert('WebRTC is not supported by your browser. You can try the app with Chrome and Firefox.');
+              return;
+            }
+            var stream;
+            VideoStream.get()
+            .then(function (s) {
+                stream = s;
+                WebRTCRoom.init(stream);
+                stream = URL.createObjectURL(stream);
+                var video = document.querySelector('video');
+                video.src = stream;
+                WebRTCRoom.joinRoom('test_room');
+            }, function () {
+              alert('No audio/video permissions. Please refresh your browser and allow the audio/video capturing.');
+           });
+        };
 
 
          $scope.messages = [];
