@@ -26,30 +26,43 @@ var app;
     })
 
 
-    .controller('MainCtrl', function($scope, $socket, $http, VideoStream, WebRTCRoom) {
+    .controller('MainCtrl', function($scope, $socket, $http, VideoStream, WebRTCRoom, $rootScope) {
 
         //WebRTC
-        $scope.enableMyVideo = function() {
-            
-
             if (!window.RTCPeerConnection || !navigator.getUserMedia) {
               alert('WebRTC is not supported by your browser. You can try the app with Chrome and Firefox.');
               return;
             }
+
             var stream;
             VideoStream.get()
             .then(function (s) {
                 stream = s;
                 WebRTCRoom.init(stream);
                 stream = URL.createObjectURL(stream);
-                var video = document.querySelector('video');
-                video.src = stream;
-                WebRTCRoom.joinRoom('test_room');
+                //WebRTCRoom.joinRoom('test_room');
+                WebRTCRoom.BroadcastNewStream();
             }, function () {
               alert('No audio/video permissions. Please refresh your browser and allow the audio/video capturing.');
            });
+
+
+        $scope.enableMyVideo = function() {
+                var video = document.querySelector('video');
+                video.src = stream;
         };
 
+        $scope.disableMyVideo = function() {
+                var video = document.querySelector('video');
+                video.src = '';
+        };
+
+
+
+
+        $scope.offer = function(stream_id){
+            WebRTCRoom.makeOffer(stream_id);
+        };
 
          $scope.messages = [];
          $scope.participants = [];
@@ -94,7 +107,7 @@ var app;
 
 
          $socket.start();
-         $scope.sessionId = document.cookie.match(/csrftoken=[^;]+/)[0];
+         $scope.sessionId, $rootScope.sessionId  = document.cookie.match(/csrftoken=[^;]+/)[0];
          $socket.send('connect',JSON.stringify({room_id: $scope.sessionId}));
 
     })

@@ -8,6 +8,18 @@
         <p><button type="button" class="btn btn-default dropdown-toggle" ng-click="sendMessage()"> Send message </button></p>
 
         <video id="my_video" autoplay></video>
-        <p><button type="button" class="btn btn-default dropdown-toggle" ng-click="enableMyVideo()"> Enable video </button></p>
+        <p>
+
+            <button type="button" class="btn btn-default dropdown-toggle" ng-click="enableMyVideo()"> Enable video </button>
+            <button type="button" class="btn btn-default dropdown-toggle" ng-click="disableMyVideo()"> Disable video </button>
+
+        </p>
+
+    <ul>
+        <li ng-repeat="c in rtc_connections">
+                <button type="button" class="btn btn-default dropdown-toggle" ng-click="offer(c)"> {{ c }} </button>
+        </li>
+    </ul>
+        
 </div>
 

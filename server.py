@@ -10,6 +10,7 @@ r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 class ChatConnection(SockJSConnection):
     participants = set()
+    video_rooms = set()
     def __init__(self,*args):
         super(ChatConnection, self).__init__(*args)  
         self._connect_to_redis()
@@ -48,6 +49,16 @@ class ChatConnection(SockJSConnection):
                 r.publish(self.current_channel,json.dumps(['someone_joined', {'id': p.current_channel}]))     
         if act == 'init_rtc_room':
             print data
+            self.video_rooms.add(self)
+            self.broadcast(self.video_rooms, json.dumps(['peer.conected',{'id': data['room_id']}]))
+        if act == 'new_rtc_stream':
+            print data
+            self.video_rooms.add(self)
+            self.broadcast(self.participants, json.dumps(['new.rtc.stream',{'stream_id': data['stream_id']}]))
+        if act == 'sdp-offer':
+            print data
+            self.broadcast(self.participants, json.dumps(['sdp.offer',data]))
+
         if act == 'send_message':
             print data
         else:
@@ -60,6 +71,7 @@ class ChatConnection(SockJSConnection):
     def on_close(self):
         # Remove client from the clients list and broadcast leave message
         self.participants.remove(self)
+        self.video_rooms.remove(self)
         self.broadcast(self.participants, json.dumps(['someone_left',{'id': self.current_channel}]))
 
 
